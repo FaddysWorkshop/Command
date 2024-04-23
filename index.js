@@ -3,6 +3,7 @@ import { spawn} from 'node:child_process';
 import { createInterface, Interface } from 'node:readline';
 import { stdin as input, stdout as output } from 'node:process';
 import { parse } from 'node:path';
+import { Console } from 'node:console';
 
 export default async ( ... command ) => ( ( await $ ( ... command ) ) .resolution );
 
@@ -35,6 +36,9 @@ process .on ( signal, () => this .command .kill ( signal ) );
 
 $_director ( $, ... line ) {
 
+if ( typeof line [ line .length - 1 ] === 'function' )
+this .input = line .pop ();
+
 return new Promise ( async ( resolution, rejection ) => {
 
 this .command = spawn( 'bash', [ '-c', line .join ( ' ' ), "Faddy's Command" ] )
@@ -56,6 +60,16 @@ this .interface .prompt ();
 read () {
 
 const { command } = this;
+
+if ( this .input ) {
+
+const input = new Console ( command .stdin );
+
+Promise .resolve ( this .input .call ( command, input .log .bind ( input ) ) )
+.then ( () => command .stdin .end () );
+
+}
+
 command .output = [];
 command .error = [];
 
