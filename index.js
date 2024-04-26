@@ -5,94 +5,121 @@ import { stdin as input, stdout as output } from 'node:process';
 import { parse } from 'node:path';
 import { Console } from 'node:console';
 
+const $$ = Symbol .for;
+let $;
+
 export default async ( ... command ) => ( ( await $ ( ... command ) ) .resolution );
 
-const $ = await Scenarist ( {
+try {
 
-$_producer ( $ ) {
+$ = await Scenarist ( new class Command {
 
-if ( process .argv [ 1 ] !== parse ( new URL ( import .meta .url ) .pathname ) .dir )
+async $_producer ( $ ) {
+
+const line = process .argv .slice ( 2 );
+
+if ( ! line .length )
 return;
 
 this .interactive = true;
 
-const line = process .argv .slice ( 2 );
+await $ ( ... line );
 
-if ( line .length )
-return $ ( ... line );
+}
+
+async $interact ( $ ) {
+
+if ( this .interface )
+throw '#error #command #interact An interface already exists.';
 
 (
 
 this .interface = createInterface ( { input, output } )
-.on ( 'line', line => $ ( line ) )
+.on ( 'line', line => ( $ ( line )
+.catch ( error => console .error ( error ) ) ) )
 .on ( 'error', error => console .error ( error .message ) )
 
 ) .prompt ();
 
 for ( const signal of [ 'SIGINT', 'SIGTERM', 'SIGHUP' ] )
-process .on ( signal, () => this .command .kill ( signal ) );
-
-},
-
-$_director ( $, ... line ) {
-
-if ( typeof line [ line .length - 1 ] === 'function' )
-this .input = line .pop ();
-
-return new Promise ( async ( resolution, rejection ) => {
-
-this .command = spawn( 'bash', [ '-c', line .join ( ' ' ), "Faddy's Command" ] )
-.on ( 'error', error => rejection ( 'Bad command' ) )
-.on ( 'spawn', () => this .read () )
-.on ( 'exit', async () => {
-
-resolution ( this .command );
-
-if ( this .interface )
-this .interface .prompt ();
-
-} );
-
-} );
-
-},
-
-read () {
-
-const { command } = this;
-
-if ( this .input ) {
-
-const input = new Console ( command .stdin );
-
-Promise .resolve ( this .input .call ( command, input .log .bind ( input ) ) )
-.then ( () => command .stdin .end () );
+process .on ( signal, () => this .process .kill ( signal ) );
 
 }
 
-command .output = [];
-command .error = [];
+#input
+#output
+#error
 
-createInterface ( { input: command .stdout } )
+$_director ( $, ... line ) {
+
+const command = this;
+
+Object .assign ( command, {
+
+input: new Promise ( input => ( command .#input = input ) ),
+output: new Promise ( output => ( command .#output = output ) ),
+error: new Promise ( error => ( command .#error = error ) ),
+process: spawn( 'bash', [ '-c', line .join ( ' ' ), "Faddy's Command" ] )
+.on ( 'error', error => console .error ( 'Bad command' ) )
+.on ( 'spawn', () => this .read () )
+.on ( 'exit', async () => {
+
+if ( command .interface )
+command .interface .prompt ();
+
+} )
+
+} );
+
+return command;
+
+}
+
+async read () {
+
+const command = this;
+
+command .#input ( await Scenarist ( {
+
+$_producer () { this .input = new Console ( command .process .stdin ) },
+$_director ( $, line ) { this .input .log ( line ) },
+$_end () { command .process .stdin .end () }
+
+} ) );
+
+if ( this .interface )
+await ( await this .input ) ( $$ ( 'end' ) );
+
+const log = [];
+const output = [];
+const error = [];
+
+createInterface ( { input: command .process .stdout } )
 .on ( 'line', line => {
 
-command .output .push ( line );
+output .push ( line );
 
 if ( this .interactive )
 console .log ( line );
 
-} );
+} ) .on ( 'close', () => command .#output ( output ) );
 
-createInterface ( { input: command .stderr } )
+createInterface ( { input: command .process .stderr } )
 .on ( 'line', line => {
 
-command .error .push ( line );
+error .push ( line );
 
 if ( this .interactive )
 console .error ( line );
 
-} );
+} ) .on ( 'close', () => command .#error ( error ) );
 
 }
 
 } );
+
+} catch ( error ) {
+
+console .error ( error );
+
+}
