@@ -1,12 +1,9 @@
 {
   "name": "@faddys/command",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Faddy's Command Player",
   "type": "module",
   "exports": "./index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/FaddysWorkshop/command.git"
