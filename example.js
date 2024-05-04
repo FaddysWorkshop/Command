@@ -2,13 +2,13 @@ import command from '@faddys/command';
 
 const cat = await command ( 'cat -' );
 
-cat ( 'input', 'Yallah?' );
-cat ( 'input', 'Salah Abdallah!' );
+cat ( 'Yallah?' );
+cat ( 'Salah Abdallah!' );
 
-cat ( 'input', Symbol .for ( 'end' ) );
+cat ( Symbol .for ( 'end' ) );
 
-( await cat ( 'output' ) ) .forEach ( line => console .log ( line ) );
+( await cat ( Symbol .for ( 'output' ) ) ) .forEach ( line => console .log ( line ) );
 
 const echo = await command ( 'echo koko wawa' );
 
-console .log ( ... await echo ( 'output' ) );
+console .log ( ... await echo ( Symbol .for ( 'output' ) ) );

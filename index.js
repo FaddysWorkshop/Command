@@ -19,7 +19,7 @@ const command = this;
 const { line } = command;
 
 command .input = new Promise ( resolution => { command .#input = resolution } );
-command .$input = new Input ( command .input );
+command .$_director = new Input ( command .input );
 
 Object .assign ( command, {
 
@@ -53,13 +53,13 @@ createInterface ( { input: command .process .stderr } )
 
 }
 
-async $output () {
+async $_output () {
 
 return await this .output;
 
 }
 
-async $error () {
+async $_error () {
 
 return await this .error;
 
