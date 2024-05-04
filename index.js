@@ -3,37 +3,33 @@ import { spawn} from 'node:child_process';
 import { createInterface, Interface } from 'node:readline';
 import { stdin as input, stdout as output } from 'node:process';
 import { parse } from 'node:path';
-import { Console } from 'node:console';
+import Input from './input.js';
 
-const $$ = Symbol .for;
-let $;
+export default await Scenarist ( class Command {
 
-export default async ( ... command ) => ( ( await $ ( ... command ) ) .resolution );
-
-try {
-
-$ = await Scenarist ( new class Command {
+constructor ( ... line ) { this .line = line }
 
 #input
 #output
 #error
 
-$_director ( $, ... line ) {
+async $_producer ( $ ) {
 
 const command = this;
+const { line } = command;
+
+command .input = new Promise ( resolution => { command .#input = resolution } );
+command .$input = new Input ( command .input );
 
 Object .assign ( command, {
 
-input: new Promise ( input => ( command .#input = input ) ),
 output: new Promise ( output => ( command .#output = output ) ),
 error: new Promise ( error => ( command .#error = error ) ),
 process: spawn( 'bash', [ '-c', line .join ( ' ' ), "Faddy's Command" ] )
 .on ( 'error', error => console .error ( 'Bad command' ) )
-.on ( 'spawn', () => command .read () )
+.on ( 'spawn', () => command .read () ),
 
 } );
-
-return command;
 
 }
 
@@ -41,20 +37,15 @@ async read () {
 
 const command = this;
 
-command .#input ( await Scenarist ( {
-
-$_producer () { this .input = new Console ( command .process .stdin ) },
-$_director ( $, line ) { this .input .log ( line ) },
-$_end () { command .process .stdin .end () }
-
-} ) );
+command .#input ( command .process .stdin );
 
 const output = [];
-const error = [];
 
 createInterface ( { input: command .process .stdout } )
 .on ( 'line', line => output .push ( line ) )
 .on ( 'close', () => command .#output ( output ) );
+
+const error = [];
 
 createInterface ( { input: command .process .stderr } )
 .on ( 'line', line => error .push ( line ) )
@@ -62,10 +53,16 @@ createInterface ( { input: command .process .stderr } )
 
 }
 
-} );
+async $output () {
 
-} catch ( error ) {
-
-console .error ( error );
+return await this .output;
 
 }
+
+async $error () {
+
+return await this .error;
+
+}
+
+} );

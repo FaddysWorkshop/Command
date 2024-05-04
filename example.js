@@ -1,15 +1,14 @@
 import command from '@faddys/command';
 
-const { input, output, error } = await command ( 'cat -' );
+const cat = await command ( 'cat -' );
 
-output .then ( output => output .forEach ( line => console .log ( line ) ) );
-error .then ( error => error .forEach ( line => console .error ( line ) ) );
+cat ( 'input', 'Yallah?' );
+cat ( 'input', 'Salah Abdallah!' );
 
-input .then ( input => {
+cat ( 'input', Symbol .for ( 'end' ) );
 
-input ( 'Yallah?' );
-input ( 'Salah Abdallah!' );
+( await cat ( 'output' ) ) .forEach ( line => console .log ( line ) );
 
-input ( Symbol .for ( 'end' ) );
+const echo = await command ( 'echo koko wawa' );
 
-} );
+console .log ( ... await echo ( 'output' ) );
