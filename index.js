@@ -7,7 +7,16 @@ import Input from './input.js';
 
 export default await Scenarist ( class Command {
 
-constructor ( ... line ) { this .line = line }
+constructor ( ... line ) {
+
+const command = this;
+
+if ( typeof line [ 0 ] === 'object' )
+command .options = line .shift ();
+
+command .line = line;
+
+}
 
 #input
 #output
@@ -25,7 +34,7 @@ Object .assign ( command, {
 
 output: new Promise ( output => ( command .#output = output ) ),
 error: new Promise ( error => ( command .#error = error ) ),
-process: spawn( 'bash', [ '-c', line .join ( ' ' ), "Faddy's Command" ] )
+process: spawn( 'bash', [ '-c', line .join ( ' ' ), '@faddys/command' ], command .options )
 .on ( 'error', error => console .error ( 'Bad command' ) )
 .on ( 'spawn', () => command .read () ),
 
@@ -37,7 +46,9 @@ async read () {
 
 const command = this;
 
-command .#input ( command .process .stdin );
+command .#input ( command .process .stdin || process .stdin );
+
+if ( command .process .stdout ) {
 
 const output = [];
 
@@ -45,11 +56,17 @@ createInterface ( { input: command .process .stdout } )
 .on ( 'line', line => output .push ( line ) )
 .on ( 'close', () => command .#output ( output ) );
 
+}
+
+if ( command .process .stderr ) {
+
 const error = [];
 
 createInterface ( { input: command .process .stderr } )
 .on ( 'line', line => error .push ( line ) )
 .on ( 'close', () => command .#error ( error ) );
+
+}
 
 }
 

@@ -8,7 +8,7 @@ The traditional "Hello World" example using Faddy's Command.
 import command from '@faddys/command';
 
 // Create the command function:
-const echo = await command ( `echo "Hello World! This is Faddy's Command in Solidarity with The People of Palestine till The Whole Land is FREE!"` );
+const echo = await command ( { stdio: 'inherit' }, `echo "Hello World! This is Faddy's Command in Solidarity with The People of Palestine till The Whole Land is FREE!"` );
 
 // Call the command function to retrieve the output by passing the symbol returned from `Symbol .for ( 'output' )` as the first parameter:
 const output = await echo ( Symbol .for ( 'output' ) );
