@@ -8,10 +8,16 @@ async $_producer () { this .console = new Console ( this .stream = await this .s
 
 $_director ( $, line ) { this .console .log ( line ) }
 
-$_end ( $, ... line ) { this .stream .end (
+$_end ( $, ... line ) {
 
-line .length ? line .join ( '\n' ) : undefined
+line = line .length ? line .join ( '\n' ) : undefined;
 
-) }
+if ( this .stream === process .stdin )
+this .console .log ( line );
+
+else
+this .stream .end ( line );
+
+}
 
 };
