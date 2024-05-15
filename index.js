@@ -2,8 +2,6 @@ import Scenarist from '@faddys/scenarist';
 import { spawn} from 'node:child_process';
 import { createInterface, Interface } from 'node:readline';
 import { stdin as input, stdout as output } from 'node:process';
-import { parse } from 'node:path';
-import Input from './input.js';
 
 export default await Scenarist ( class Command {
 
@@ -18,7 +16,6 @@ command .line = line;
 
 }
 
-#input
 #output
 #error
 
@@ -26,9 +23,6 @@ async $_producer ( $ ) {
 
 const command = this;
 const { line } = command;
-
-command .input = new Promise ( resolution => { command .#input = resolution } );
-command .$_director = new Input ( command .input );
 
 Object .assign ( command, {
 
@@ -42,11 +36,27 @@ process: spawn( 'bash', [ '-c', line .join ( ' ' ), '@faddys/command' ], command
 
 }
 
-async read () {
+async $_director ( $, ... line ) {
 
 const command = this;
 
-command .#input ( command .process .stdin || process .stdin );
+if ( line .length && command .process .stdin )
+command .process .stdin .write ( line .join ( '\n' ) + '\n' );
+
+}
+
+$_end ( $, ... line ) {
+
+const command = this;
+
+if ( command .process .stdin )
+command .process .stdin .end ( line .length ? line .join ( '\n' ) : undefined );
+
+}
+
+async read () {
+
+const command = this;
 
 if ( command .process .stdout ) {
 
