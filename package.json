@@ -1,6 +1,6 @@
 {
   "name": "@faddys/command",
-  "version": "5.1.2",
+  "version": "5.1.3",
   "description": "Faddy's Command Player",
   "type": "module",
   "exports": "./index.js",
@@ -15,6 +15,6 @@
   },
   "homepage": "https://github.com/FaddysWorkshop/command#readme",
   "dependencies": {
-    "@faddys/scenarist": "^2.1.0"
+    "@faddys/scenarist": "^2.1.1"
   }
 }
