@@ -18,8 +18,9 @@ command .line = line;
 
 #output
 #error
+#exit
 
-async $_producer ( $ ) {
+$_producer ( $ ) {
 
 const command = this;
 const { line } = command;
@@ -28,20 +29,22 @@ Object .assign ( command, {
 
 output: new Promise ( output => ( command .#output = output ) ),
 error: new Promise ( error => ( command .#error = error ) ),
+exit: new Promise ( exit => ( command .#exit = exit ) ),
 process: spawn( 'bash', [ '-c', line .join ( ' ' ), '@faddys/command' ], command .options )
 .on ( 'error', error => console .error ( 'Bad command' ) )
-.on ( 'spawn', () => command .read () ),
+.on ( 'spawn', () => command .read () )
+.on ( 'exit', code => command .#exit ( code ) )
 
 } );
 
 }
 
-async $_director ( $, ... line ) {
+$_director ( $, ... line ) {
 
 const command = this;
 
 if ( line .length && command .process .stdin )
-command .process .stdin .write ( line .join ( '\n' ) + '\n' );
+command .process .stdin .write ( line .join ( ' ' ) + '\n' );
 
 }
 
@@ -54,7 +57,7 @@ command .process .stdin .end ( line .length ? line .join ( ' ' ) : undefined );
 
 }
 
-async read () {
+read () {
 
 const command = this;
 
@@ -80,16 +83,22 @@ createInterface ( { input: command .process .stderr } )
 
 }
 
-async $_output () {
+$_output () {
 
-return await this .output;
+return this .output;
+
+}
+
+$_error () {
+
+return this .error;
 
 }
 
-async $_error () {
+$_exit () {
 
-return await this .error;
+return this .exit;
 
-}
+};
 
 } );

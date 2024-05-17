@@ -1,6 +1,6 @@
 {
   "name": "@faddys/command",
-  "version": "5.1.4",
+  "version": "5.2.0",
   "description": "Faddy's Command Player",
   "type": "module",
   "exports": "./index.js",
