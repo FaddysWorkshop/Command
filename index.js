@@ -50,7 +50,7 @@ $_end ( $, ... line ) {
 const command = this;
 
 if ( command .process .stdin )
-command .process .stdin .end ( line .length ? line .join ( '\n' ) : undefined );
+command .process .stdin .end ( line .length ? line .join ( ' ' ) : undefined );
 
 }
 
