@@ -57,6 +57,12 @@ command .process .stdin .end ( line .length ? line .join ( ' ' ) : undefined );
 
 }
 
+$_signal ( $, ... line ) {
+
+this .process .kill ( ... line .slice ( 0, 1 ) );
+
+}
+
 read () {
 
 const command = this;

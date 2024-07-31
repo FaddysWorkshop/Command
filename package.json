@@ -6,14 +6,14 @@
   "exports": "./index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FaddysWorkshop/command.git"
+    "url": "git+https://github.com/FaddysWorkshop/Command.git"
   },
   "author": "Faddy Michel <faddy.michel@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/FaddysWorkshop/command/issues"
+    "url": "https://github.com/FaddysWorkshop/Command/issues"
   },
-  "homepage": "https://github.com/FaddysWorkshop/command#readme",
+  "homepage": "https://github.com/FaddysWorkshop/Command#readme",
   "dependencies": {
     "@faddys/scenarist": "^2.2.0"
   }

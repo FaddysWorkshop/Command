@@ -6,3 +6,5 @@ write ( "Hello World! This is Faddy's Command!" );
 write ( "In Solidarity with The People of Palestine till The Whole Land is FREE!" );
 
 write ( Symbol .for ( 'end' ), '\nFaddy Michel\n' + new Date );
+
+// write ( Symbol .for ( 'signal' ), 'SIGTERM' );
